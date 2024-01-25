@@ -19,11 +19,11 @@
 .fr-wrapper {
   height: 50vh;
 }
-body {
+/* body {
   background-color: #fbfbfb !important;
 }
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #111827 !important;
   }
-}
+} */

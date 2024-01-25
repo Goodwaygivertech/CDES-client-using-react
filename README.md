@@ -1,8 +1,20 @@
-# React + Vite
+# Collaborative Document Editing System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Run Code**
+```bash
+npm install && npm run dev
+```
+**Start Command**
 
-Currently, two official plugins are available:
+```bash
+npm run dev
+```
+**Build Command**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```bash
+npm run build
+```
+
+The deployed version of this project on Vercel here :
+[https://cdes-gwg.vercel.app/](https://cdes-gwg.vercel.app/)
+

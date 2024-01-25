@@ -4,27 +4,24 @@ export default function About() {
   return (
   <>
   
-  <div className="bg-gray-100 min-h-screen flex items-center justify-center">
-      <div className="max-w-md p-8 bg-white shadow-md rounded-md">
-        <h1 className="text-3xl font-bold mb-4 dark:text-gray-900">About Me</h1>
-        <p className="text-gray-700 mb-4">
-          Hi there! I'm Shivam Kumar, a passionate full-stack web developer based in India.
+  <div className="dark:bg-gray-800 min-h-screen flex items-center justify-center">
+      <div className="max-w-md p-8 bg-white dark:bg-gray-900 shadow-md rounded-md">
+        <h1 className="text-3xl font-bold mb-4 dark:text-gray-200">About Me</h1>
+        <p className="text-gray-700 dark:text-gray-300 mb-4">
+        Hello there! I'm Shivam Kumar, an enthusiastic Indian full-stack web developer.
         </p>
-        <p className="text-gray-700 mb-4">
-          I love building web applications and solving problems using a variety of technologies.
-          With a strong foundation in both front-end and back-end development, I strive to create
-          efficient and user-friendly applications.
+        <p className="text-gray-700 dark:text-gray-300 mb-4">
+        I enjoy utilizing a range of technologies to solve problems and creating web applications. Having a solid background in both front-end and back-end development, I work hard to make applications that are effective and easy to use.
         </p>
-        <p className="text-gray-700 mb-4">
-          Currently, I am honing my skills and exploring new technologies to stay up-to-date
-          with the ever-evolving landscape of web development.
+        <p className="text-gray-700 dark:text-gray-300 mb-4">
+        I'm currently developing my abilities and learning about new technologies to keep up with the ever changing web development scene.
         </p>
-        <p className="text-gray-700 mb-4">
-          Feel free to reach out to me at{' '}
+        <p className="text-gray-700 dark:text-gray-300 mb-4">
+        Please feel free to contact me at
           <a href="mailto:goodwaygivershivam@gmail.com" className="text-blue-500">
             goodwaygivershivam@gmail.com
           </a>{' '}
-          for any inquiries or just to say hello!
+          with any questions or simply to say hi!
         </p>
       </div>
     </div>

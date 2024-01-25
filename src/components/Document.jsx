@@ -1,63 +1,48 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { io } from "socket.io-client";
-// import Editor from "react-simple-wysiwyg";
-// import FroalaEditor  from "react-froala-wysiwyg"
 import FroalaEditor from "react-froala-wysiwyg";
 import "froala-editor/js/plugins/char_counter.min.js";
 import "froala-editor/js/plugins/save.min.js";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { userContext,requestStateContext } from "./context/ContextProvider";
+import { userContext, requestStateContext } from "./context/ContextProvider";
 export default function Document() {
   const socket = useMemo(
     () =>
-      io("http://localhost:5000", {
+      io("https://cdes-backend.vercel.app", {
         withCredentials: true,
       }),
     []
   );
-  const [messages, setMessages] = useState([]);
-  const [message, setMessage] = useState("");
-  const [room, setRoom] = useState("");
-  const [socketID, setSocketId] = useState("");
+
   const [roomName, setRoomName] = useState("myroom");
   const [docId, setDocId] = useState("");
   const [docName, setDocName] = useState("");
   const [doc, setDoc] = useState([]);
   const [isDocAccessForThisUser, setIsDocAccessForThisUser] = useState(false);
   const [model, setModel] = useState("");
-  const { user, setUser } = useContext(userContext);
-  const { isRequestDone, setIsRequestDone } = useContext(requestStateContext);
+  const { user } = useContext(userContext);
+  const { setIsRequestDone } = useContext(requestStateContext);
+  const [email, setEmail] = useState("");
 
-  // ind 0 => doc name
-  // ind 1 => doc _id
   const params = useParams();
-  
+
   const handleChangeModel = (html) => {
-    // alert("in handlesubmit");
-setModel(html)
+    setModel(html);
     socket.emit("message", { model: html, roomName });
-    // console.log("model=>>>>>>>",model)
-    console.log("html=>>>>>>>", html);
-    // setMessage("");
   };
 
   const joinRoomHandler = () => {
     socket.emit("join-room", roomName);
-    // alert("joind", roomName);
-    // setRoomName("");
   };
 
   const getDocumentData = async () => {
-    setIsRequestDone(true)
-    // http://localhost:5000/api/getDoc/65b11b0467f5291f3ce2a846
+    setIsRequestDone(true);
     let { allPara } = params;
     const splitedparams = allPara.split("-");
-    //   setDocName(splitedparams[0])
-    //  setDocId(splitedparams[1])
     const response = await axios.get(
-      `http://localhost:5000/api/getDoc/${splitedparams[1]}`
+      `https://cdes-backend.vercel.app/api/getDoc/${splitedparams[1]}`
     );
     // Set the response in the state
     const responseData = response.data;
@@ -72,7 +57,7 @@ setModel(html)
         joinRoomHandler();
       }
     }
-    setIsRequestDone(false)
+    setIsRequestDone(false);
   };
 
   useEffect(() => {
@@ -82,98 +67,93 @@ setModel(html)
     setDocId(splitedparams[1]);
     getDocumentData();
     socket.on("connect", () => {
-      setSocketId(socket.id);
       console.log("connected", socket.id);
     });
 
     socket.on("receive-message", (data) => {
       console.log("data in receive-message =>>>>>", data);
-      // setMessages((messages) => [...messages, data]);
       setModel(data);
     });
-
-
-
   }, []);
-
-  //
-
-  const [email, setEmail] = useState("");
-
-  const navigate = useNavigate();
-  const [response, setResponse] = useState(null);
-  const [error, setError] = useState(null);
 
   // Function to handle form submission and make the API call
   const handelShareLinkCreation = async (e) => {
-    setIsRequestDone(true)
+    setIsRequestDone(true);
     e.preventDefault();
-    setEmail("")
+    setEmail("");
     try {
       const bodyData = {
         documentId: docId,
         userEmailToShareWith: email,
       };
       const response = await axios.put(
-        "http://localhost:5000/api/share-doc",
+        "https://cdes-backend.vercel.app/api/share-doc",
         bodyData
       );
       const responseData = response.data;
-      
     } catch (error) {
       // Handle errors
-      setResponse(null);
-      setError(error.message || "An error occurred");
+      toast.error("An error occurred");
     }
-    setIsRequestDone(false)
+    setIsRequestDone(false);
   };
 
   const handleEmailChange = (e) => {
     const name = e.target.name;
-    const value = e.target.value;
     setEmail(value);
   };
 
-
-const handleUpdateDocData = async(e)=>{
-  setIsRequestDone(true)
-  e.preventDefault()
-  let bodyData = {
-    "newDocData":model
-  }
-  // http://localhost:5000/api/update-doc-data/65b13b0998fa5407d503c009
-  const response = await axios.put(
-    `http://localhost:5000/api/update-doc-data/${doc._id}`,
-    bodyData
-  );
- const responseData = response.data;
- if(responseData.success){
-  toast("updated successfully ")
- }
- setIsRequestDone(false)
-
-}
+  const handleUpdateDocData = async (e) => {
+    setIsRequestDone(true);
+    e.preventDefault();
+    let bodyData = {
+      newDocData: model,
+    };
+    // https://cdes-backend.vercel.app/api/update-doc-data/65b13b0998fa5407d503c009
+    const response = await axios.put(
+      `https://cdes-backend.vercel.app/api/update-doc-data/${doc._id}`,
+      bodyData
+    );
+    const responseData = response.data;
+    if (responseData.success) {
+      toast.success("Updated successfully ");
+    }
+    setIsRequestDone(false);
+  };
 
   return (
     <>
-    <section className="max-w-screen-xl mx-auto">
-      <div className="flex gap-4 mb-4 border-2 rounded-md">
-      <p className="dark:text-white font-medium font-rubik p-1">Name:- {docName}</p>
-      <p className="dark:text-white font-medium font-rubik p-1">Id:- {docId}</p>
-</div>
-      <button
-        data-modal-target="authentication-modal2"
-        data-modal-toggle="authentication-modal2"
-        type="button"
-        className={`default-btn ${!isDocAccessForThisUser ? "pointer-events-none":null}`}
-       
-        style={{ margin: "0px", marginRight: "10px" }}
-      >
-        Share With Other
-      </button>
-      <button    onClick={(e)=>handleUpdateDocData(e)} type="button" title="save doc in database for save preview in future" class={`green-btn ${!isDocAccessForThisUser? "pointer-events-none":null}`}>Save Document in DataBase</button>
-
-</section>
+      <section className="max-w-screen-xl mx-auto">
+        <div className="flex gap-4 mb-4 border-2 rounded-md">
+          <p className="dark:text-white font-medium font-rubik p-1">
+            Name:- {docName}
+          </p>
+          <p className="dark:text-white font-medium font-rubik p-1">
+            Id:- {docId}
+          </p>
+        </div>
+        <button
+          data-modal-target="authentication-modal2"
+          data-modal-toggle="authentication-modal2"
+          type="button"
+          className={`default-btn ${
+            !isDocAccessForThisUser ? "pointer-events-none" : null
+          }`}
+          style={{ margin: "0px", marginRight: "10px" }}
+        >
+          Share With Other
+        </button>
+        <button
+          onClick={(e) => handleUpdateDocData(e)}
+          type="button"
+          title="save doc in database for save preview in future"
+          className={`green-btn ${
+            !isDocAccessForThisUser ? "pointer-events-none" : null
+          }`}
+        >
+          Save Document in DataBase
+        </button>
+      </section>
       <div
         id="authentication-modal2"
         tabIndex={-1}
@@ -230,9 +210,15 @@ const handleUpdateDocData = async(e)=>{
                     required=""
                     onChange={handleEmailChange}
                   />
-                 <div className="my-1 dark:text-white">
-               Already:-  {doc.sharedWith && doc.sharedWith.map((email)=><span className="border dark:text-white rounded-md">{email} </span>)}
-               </div> 
+                  <div className="my-1 dark:text-white">
+                    Already:-{" "}
+                    {doc.sharedWith &&
+                      doc.sharedWith.map((email) => (
+                        <span className="border dark:text-white rounded-md">
+                          {email}{" "}
+                        </span>
+                      ))}
+                  </div>
                 </div>
 
                 <button
@@ -253,25 +239,16 @@ const handleUpdateDocData = async(e)=>{
           {" "}
           <FroalaEditor
             model={model}
-            onModelChange={(e) => {handleChangeModel(e);}}
-            config={{
-              // placeholderText:""
-              // saveInteval: 10,
-              // events: {
-              //   "save.before": function (html) {
-              //     console.log(html);
-              //     handleChangeModel(html);
-              //   },
-              // },
+            onModelChange={(e) => {
+              handleChangeModel(e);
             }}
             tag="textarea"
           />
         </>
       ) : (
         <p className="text-[red] font-bold font-rubik text-center">
-        THIS FILE IS NOT ACCESSABLE FOR YOU, FILE IS PROTECTED 
-    </p>
-       
+          THIS FILE IS NOT ACCESSABLE FOR YOU, FILE IS PROTECTED
+        </p>
       )}
     </>
   );

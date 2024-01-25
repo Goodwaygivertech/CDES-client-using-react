@@ -2,8 +2,8 @@ import React, { useContext, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom"; // or your preferred routing library
 import axios from "axios";
 import { userContext, requestStateContext } from "./context/ContextProvider";
+import { toast } from "react-toastify";
 const Nav = () => {
-  const [isOpen, setIsOpen] = useState(false);
 
   const { user, setUser } = useContext(userContext);
   const { isRequestDone, setIsRequestDone } = useContext(requestStateContext);
@@ -15,8 +15,7 @@ const Nav = () => {
   });
 
   const navigate = useNavigate();
-  const [response, setResponse] = useState(null);
-  const [error, setError] = useState(null);
+
 
   // Function to handle form submission and make the API call
   const handelNewDocSubmit = async (e) => {
@@ -24,18 +23,16 @@ const Nav = () => {
     try {
       // Make the API call using Axios
       const response = await axios.post(
-        "http://localhost:5000/api/addDoc",
+        "https://cdes-backend.vercel.app/api/addDoc",
         formData
       );
       // Set the response in the state
       const responseData = response.data;
-      // setResponse(responseData);
-      // setError(null);
       navigate(`/document/${formData.docName}-${responseData._id}`);
+      toast.success("New Document Created")
     } catch (error) {
-      // Handle errors
-      setResponse(null);
-      setError(error.message || "An error occurred");
+      toast.error("An error occurred")
+
     }
   };
 
@@ -47,9 +44,7 @@ const Nav = () => {
 
   return (
     <>
-      {/* Modal toggle */}
-
-      {/* Main modal */}
+   
       <div
         id="authentication-modal"
         tabIndex={-1}
@@ -62,7 +57,7 @@ const Nav = () => {
             {/* Modal header */}
             <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                Sign in to our platform
+                Give a name for doc
               </h3>
               <button
                 type="button"
@@ -133,7 +128,7 @@ const Nav = () => {
               alt="Flowbite Logo"
             />
             <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
-              CGES
+              CDES
             </span>
           </Link>
           <div className="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
@@ -146,7 +141,7 @@ const Nav = () => {
                   className="default-btn"
                   style={{ margin: "0px", marginRight: "10px" }}
                 >
-                  New Doc
+                  + New Doc
                 </button>
                 <button
                   type="button"
@@ -200,6 +195,7 @@ const Nav = () => {
                   <button
                     onClick={() => {
                       localStorage.removeItem("userData");
+                      window.location.reload();
                     }}
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                   >

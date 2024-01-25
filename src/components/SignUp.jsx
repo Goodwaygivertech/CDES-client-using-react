@@ -7,7 +7,7 @@ export default function SignUp() {
 
  
   const {user, setUser} = useContext(userContext);
-  const { doneSignUp, setDoneSignUp } = useState(false);
+  const [ doneSignUp, setDoneSignUp ] = useState(false);
 
   const [formData, setFormData] = useState({
     fname: '',
@@ -30,10 +30,12 @@ export default function SignUp() {
   // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+   if(formData.confirmPassword !== formData.password){
+return toast.error("Please confirm the password!")
+   }
   
     try {
-      const response = await axios.post('http://localhost:5000/api/signup', formData);
+      const response = await axios.post('https://cdes-backend.vercel.app/api/signup', formData);
       const responseData = response.data;
   
       if (responseData.created) {
@@ -151,10 +153,10 @@ export default function SignUp() {
   >
    {!doneSignUp?    "Submit": "User Created"}
   </button>
- <a className="green-btn" href="/">
-          {doneSignUp && "Go To Home"}
+ <a className={`${!doneSignUp?"pointer-events-none":null} green-btn ml-2`} href="/">
+          Go To Home
         </a></form>
-s
+
    </>
   )
 }
