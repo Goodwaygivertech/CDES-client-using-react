@@ -1,12 +1,14 @@
 import React, { useContext, useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom"; // or your preferred routing library
+import { Link, useLocation, useNavigate } from "react-router-dom"; // or your preferred routing library
 import axios from "axios";
-import { userContext, requestStateContext } from "./context/ContextProvider";
+import { userContext, requestStateContext ,fetchDocContext} from "./context/ContextProvider";
 import { toast } from "react-toastify";
 const Nav = () => {
 
   const { user, setUser } = useContext(userContext);
   const { isRequestDone, setIsRequestDone } = useContext(requestStateContext);
+  const { fetchDoc, setFetchDoc } = useContext(fetchDocContext);
+
   const [formData, setFormData] = useState({
     docName: "",
     docData: "non",
@@ -15,7 +17,8 @@ const Nav = () => {
   });
 
   const navigate = useNavigate();
-
+  const location = useLocation()
+  const {pathname} = location;
 
   // Function to handle form submission and make the API call
   const handelNewDocSubmit = async (e) => {
@@ -23,12 +26,14 @@ const Nav = () => {
     try {
       // Make the API call using Axios
       const response = await axios.post(
-        "https://cdes-backend.vercel.app/api/addDoc",
+        "http://localhost:5000/api/addDoc",
         formData
       );
       // Set the response in the state
       const responseData = response.data;
-      navigate(`/document/${formData.docName}-${responseData._id}`);
+      
+      // navigate(`/document/${formData.docName}-${responseData._id}`);
+      setFetchDoc(!fetchDoc)
       toast.success("New Document Created")
     } catch (error) {
       toast.error("An error occurred")
@@ -118,8 +123,8 @@ const Nav = () => {
 
       <nav className="bg-white border-gray-200 dark:bg-gray-900 border-b-2 ">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-          <Link
-            to="/"
+          <a
+            href="/"
             className="flex items-center space-x-3 rtl:space-x-reverse"
           >
             <img
@@ -130,7 +135,7 @@ const Nav = () => {
             <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
               CDES
             </span>
-          </Link>
+         </a>
           <div className="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
             {user && user.created ? (
               <>
@@ -161,20 +166,20 @@ const Nav = () => {
               </>
             ) : (
               <>
-                <Link
-                  to={"/login"}
+                <a
+                  href={"/login"}
                   className="default-btn"
                   style={{ margin: "0px", marginRight: "10px" }}
                 >
                   Login{" "}
-                </Link>
-                <Link
-                  to={"/signup"}
+               </a>
+                <a
+                  href={"/signup"}
                   className="default-btn"
                   style={{ margin: "0px", marginRight: "10px" }}
                 >
                   SignUP{" "}
-                </Link>
+               </a>
               </>
             )}
 
@@ -246,30 +251,30 @@ const Nav = () => {
           >
             <ul className="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
               <li>
-                <Link
-                  to="/"
-                  className="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500"
+                <a
+                  href="/"
+                  className={`block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0  md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700 md:bg-transparent  ${pathname === "/" ? "md:dark:text-blue-500 md:text-blue-500 bg-blue-500" :"text-gray-900 dark:text-white "}`}
                   aria-current="page"
                 >
                   Home
-                </Link>
+               </a>
               </li>
               <li>
-                <Link
-                  to="/about"
-                  className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                <a
+                  href="/about"
+                  className={`block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0  md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700 md:bg-transparent  ${pathname === "/about" ? "md:dark:text-blue-500 md:text-blue-500 bg-blue-500" :"text-gray-900 dark:text-white "}`}
                 >
                   About
-                </Link>
+               </a>
               </li>
 
               <li>
-                <Link
-                  to="/contact"
-                  className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                <a
+                  href="/contact"
+                  className={`block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0  md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700 md:bg-transparent  ${pathname === "/contact" ? "md:dark:text-blue-500 md:text-blue-500 bg-blue-500" :"text-gray-900 dark:text-white "}`}
                 >
                   Contact
-                </Link>
+               </a>
               </li>
             </ul>
           </div>

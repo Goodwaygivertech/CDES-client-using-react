@@ -6,6 +6,8 @@ import { toast } from "react-toastify";
 export default function Login() {
   const { user, setUser } = useContext(userContext);
   const [doneLoging, setDoneLoging] = useState(false);
+  const [loading, setLoading] = useState(false);
+
 
   const [formData, setFormData] = useState({
     email: "",
@@ -26,13 +28,14 @@ export default function Login() {
   // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true)
 
     const { email, password } = formData;
     const requestData = { email, password };
 
     try {
       const response = await axios.post(
-        "https://cdes-backend.vercel.app/api/login",
+        "http://localhost:5000/api/login",
         requestData
       );
       const responseData = response.data;
@@ -47,10 +50,12 @@ export default function Login() {
         );
         // navigate("/")
         setDoneLoging(true);
+        setLoading(false)
         toast.success("User LogedIn Successfully ");
       }
     } catch (error) {
       // Handle error
+      setLoading(false)
       toast.error("Error While User Loging");
 
       console.error("Login error:", error);
@@ -63,7 +68,7 @@ export default function Login() {
     <>
       <Link
         to="/"
-        className="flex items-center space-x-3 rtl:space-x-reverse py-4"
+        className="flex justify-center space-x-3 rtl:space-x-reverse py-4"
       >
         <img
           src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXQgUC93Ys3Fox4V5uUFUEai59O870QsUxlPTrRYcW-w&s"
@@ -117,18 +122,17 @@ export default function Login() {
           className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
           {!doneLoging ? "Submit" : "User Created"}
+          {loading && (
+            <span className="loading loading-spinner loading-xs"></span>
+          )}
         </button>
         <a
-          className={`${
-            !doneLoging ? "pointer-events-none" : null
-          } green-btn ml-2`}
+          className={`green-btn ml-2`}
           href="/"
         >
           Go To Home
         </a>
-      </form>
-
-      <div className="text-sm font-medium text-center text-gray-500 dark:text-gray-300">
+        <div className="text-sm font-medium text-center text-gray-500 dark:text-gray-300 mt-4">
         Not registered?{" "}
         <Link
           to="/signup"
@@ -137,6 +141,8 @@ export default function Login() {
           Create account
         </Link>
       </div>
+      </form>
+
     </>
   );
 }

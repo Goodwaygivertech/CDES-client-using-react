@@ -2,6 +2,7 @@ import React, { createContext, useState } from "react";
 
 export const userContext = createContext();
 export const requestStateContext = createContext();
+export const fetchDocContext = createContext();
 // export const latestPost = createContext();
 
 
@@ -11,6 +12,7 @@ const ContextProvider = ({ children }) => {
   
   const [user, setUser] = useState(initialUserState);
   const [isRequestDone, setIsRequestDone] = useState(false);
+  const [fetchDoc, setFetchDoc] = useState(0);
 
 
 
@@ -19,7 +21,9 @@ const ContextProvider = ({ children }) => {
     <>
       <userContext.Provider value={{ user, setUser }}>
         <requestStateContext.Provider value={{ isRequestDone, setIsRequestDone }} >
+        <fetchDocContext.Provider value={{ fetchDoc, setFetchDoc}} >
                   {children}
+         </fetchDocContext.Provider>      
          </requestStateContext.Provider>      
       </userContext.Provider>
     </>

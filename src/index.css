@@ -19,6 +19,14 @@
 .fr-wrapper {
   height: 50vh;
 }
+
+#fr-logo{
+  display: none;
+}
+
+.fr-wrapper div:nth-child(1) {
+  display: none;
+}
 /* body {
   background-color: #fbfbfb !important;
 }

@@ -10,7 +10,7 @@ import { userContext, requestStateContext } from "./context/ContextProvider";
 export default function Document() {
   const socket = useMemo(
     () =>
-      io("https://cdes-backend.vercel.app", {
+      io("http://localhost:5000", {
         withCredentials: true,
       }),
     []
@@ -29,8 +29,8 @@ export default function Document() {
   const params = useParams();
 
   const handleChangeModel = (html) => {
-    setModel(html);
     socket.emit("message", { model: html, roomName });
+    setModel(html);
   };
 
   const joinRoomHandler = () => {
@@ -42,7 +42,7 @@ export default function Document() {
     let { allPara } = params;
     const splitedparams = allPara.split("-");
     const response = await axios.get(
-      `https://cdes-backend.vercel.app/api/getDoc/${splitedparams[1]}`
+      `http://localhost:5000/api/getDoc/${splitedparams[1]}`
     );
     // Set the response in the state
     const responseData = response.data;
@@ -85,12 +85,41 @@ export default function Document() {
       const bodyData = {
         documentId: docId,
         userEmailToShareWith: email,
+        push:true
       };
       const response = await axios.put(
-        "https://cdes-backend.vercel.app/api/share-doc",
+        "http://localhost:5000/api/share-doc",
         bodyData
       );
       const responseData = response.data;
+      if(responseData.success){
+        getDocumentData()
+        toast.success("Doc Shared With Email")
+      }
+    } catch (error) {
+      // Handle errors
+      toast.error("An error occurred");
+    }
+    setIsRequestDone(false);
+  };
+  const handelRemoveEmail = async (e,email) => {
+    setIsRequestDone(true);
+    e.preventDefault();
+    setEmail("");
+    try {
+      const bodyData = {
+        documentId: docId,
+        userEmailToShareWith: email,
+        push:false
+      };
+      const response = await axios.put(
+        "http://localhost:5000/api/share-doc",
+        bodyData
+      );
+      const responseData = response.data;
+      if(responseData.success){
+        getDocumentData()
+      }
     } catch (error) {
       // Handle errors
       toast.error("An error occurred");
@@ -99,7 +128,7 @@ export default function Document() {
   };
 
   const handleEmailChange = (e) => {
-    const name = e.target.name;
+    const value = e.target.value;
     setEmail(value);
   };
 
@@ -109,9 +138,9 @@ export default function Document() {
     let bodyData = {
       newDocData: model,
     };
-    // https://cdes-backend.vercel.app/api/update-doc-data/65b13b0998fa5407d503c009
+    // http://localhost:5000/api/update-doc-data/65b13b0998fa5407d503c009
     const response = await axios.put(
-      `https://cdes-backend.vercel.app/api/update-doc-data/${doc._id}`,
+      `http://localhost:5000/api/update-doc-data/${doc._id}`,
       bodyData
     );
     const responseData = response.data;
@@ -210,13 +239,16 @@ export default function Document() {
                     required=""
                     onChange={handleEmailChange}
                   />
-                  <div className="my-1 dark:text-white">
-                    Already:-{" "}
+                  <div className="my-1 dark:text-white max-h-[180px] overflow-scroll">
+                    Already:- <br />
                     {doc.sharedWith &&
-                      doc.sharedWith.map((email) => (
-                        <span className="border dark:text-white rounded-md">
+                      doc.sharedWith.map((email , i) => (
+                        <div key={i}  className="border dark:text-white rounded-md p-2 mb-1">
                           {email}{" "}
-                        </span>
+                          <span onClick={(e)=>handelRemoveEmail(e,email)} className="btn btn-sm float-right">
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+</span>
+                        </div>
                       ))}
                   </div>
                 </div>
