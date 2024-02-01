@@ -66,5 +66,15 @@ export const router = createBrowserRouter([
       </>
     ),
   },
+  {
+    path: "/*",
+    element: (
+      <>
+     <FormatPage>
+        NOT FOUND
+        </FormatPage>
+      </>
+    ),
+  },
 
 ]);
